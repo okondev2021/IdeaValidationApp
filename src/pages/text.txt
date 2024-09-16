@@ -1,0 +1,20 @@
+“Get ready to transform your ideas into reality with cutting-edge AI validation at your fingertips.”
+
+
+Login Page:
+
+"Unlock the AI-powered future of your startup."
+"Ready to transform your idea into reality? Login now."
+"Your path to innovation starts here. Login to validate your idea."
+Signup Page:
+
+"Join the community of founders turning ideas into success."
+"Create your account and let AI guide your startup journey."
+"Start validating your idea today. Sign up now and be part of the innovation wave."
+
+
+
+
+Color-CODE:
+red-bold: #dd183b
+red-light: #fff0eb
