@@ -4,6 +4,9 @@
 @tailwind utilities;
 
 
+.authForm{
+    @apply mt-[2em] flex flex-col gap-6 
+}
 .inputContainer{
     @apply flex flex-col gap-3
 }
@@ -18,4 +21,12 @@
 
 .authSubmitInput{
     @apply bg-redbold text-white w-full py-3 rounded-xl mt-2 cursor-pointer
+}
+
+.authFooterContainer{
+    @apply w-full flex justify-center my-[3em] items-center mobile:mt-[3em]
+}
+
+.authFooterLink{
+    @apply text-redbold font-semibold
 }

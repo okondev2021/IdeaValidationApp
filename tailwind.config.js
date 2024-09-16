@@ -5,6 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'tab': {'max': '800px'},
+      // => @media (max-width: 1030px) { ... }
+      'mobile': {'max': '430px'},
+      // => @media (max-width: 430px) { ... }
+    }, 
     extend: {
       colors: {
         redbold: "#dd183b",
