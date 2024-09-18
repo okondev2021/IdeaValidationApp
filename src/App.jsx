@@ -1,19 +1,25 @@
-import { Routes, Route} from "react-router-dom"
+import { Routes, Route, BrowserRouter as Router} from "react-router-dom"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
-import Main from "./pages/main"
+import MainPage from "./pages/MainPage"
 import NoMatch from "./pages/NoMatch"
+import AuthContextProvider from "./context/AuthContextProvider"
+
 
 function App() {
 
   return (
     <div className="h-screen">
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="signin" element={<SignIn />} />
-        <Route path="signup" element={<SignUp />} />
-        <Route path="*" element={<NoMatch />} />
-      </Routes>
+      <Router>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="signin" element={<SignIn />} />
+            <Route path="signup" element={<SignUp />} />
+            <Route path="*" element={<NoMatch />} />
+          </Routes>
+        </AuthContextProvider>
+      </Router>
     </div>
   )
 }

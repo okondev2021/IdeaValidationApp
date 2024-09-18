@@ -24,7 +24,7 @@
 }
 
 .authFooterContainer{
-    @apply w-full flex justify-center my-[3em] items-center mobile:mt-[3em]
+    @apply w-full flex justify-center mt-[1.5em] items-center mobile:mt-[3em]
 }
 
 .authFooterLink{
