@@ -18,3 +18,15 @@ Signup Page:
 Color-CODE:
 red-bold: #dd183b
 red-light: #fff0eb
+
+
+        // const exp = decodedToken.exp;  
+        // const now = Date.now() / 1000;
+        // const timeout = exp - decodedToken.iat;
+
+        // console.log(timeout)
+
+
+        // setTimeout(() => {
+        //     refreshToken();
+        // }, timeout);
