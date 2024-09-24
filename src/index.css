@@ -4,6 +4,30 @@
 @tailwind utilities;
 
 
+
+::-webkit-scrollbar{
+    width: 10px;
+    cursor:pointer
+}
+
+::-webkit-scrollbar-track{
+    background-color: #fde2d9;
+    border-radius: 10px;
+}
+  
+::-webkit-scrollbar-thumb{
+    background-color: #dd183b;
+    border-radius: 10px;
+    cursor: pointer;
+}
+  
+::-webkit-scrollbar-corner{
+    background-color: #fde2d9;
+}
+
+
+
+/*  */
 .authForm{
     @apply mt-[2em] flex flex-col gap-6 
 }
@@ -20,7 +44,7 @@
 }
 
 .authSubmitInput{
-    @apply bg-redbold text-white w-full py-3 rounded-xl mt-2 cursor-pointer
+    @apply bg-redbold text-white w-full py-3 rounded-xl mt-2 cursor-pointer flex justify-center items-center text-center
 }
 
 .authFooterContainer{
@@ -29,4 +53,26 @@
 
 .authFooterLink{
     @apply text-redbold font-semibold
+}
+
+
+/* ELEMENTS STYLES */
+h2{
+    @apply text-4xl font-medium mb-4
+}
+
+h3{
+    @apply text-2xl font-medium mt-4
+}
+
+h4{
+    @apply text-2xl font-medium
+}
+
+h5{
+    @apply text-xl font-medium
+}
+
+h6{
+    @apply text-lg font-medium
 }

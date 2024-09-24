@@ -3,10 +3,12 @@ import { Link } from "react-router-dom"
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import AuthText from "../components/AuthText"
 import AuthHeader from "../components/AuthHeader"
+import close from '../assets/close.svg'
+import Loader from "../components/Loader"
 
 const SignIn = () => {
 
-    const {userLogin} = useContext(AuthInfoContext)
+    const {handleAuthSuccess} = useContext(AuthInfoContext)
 
     const [loginInfo, setLoginInfo] = useState({
         email : "",
@@ -17,6 +19,60 @@ const SignIn = () => {
         setLoginInfo({...loginInfo, [e.target.name]: e.target.value})
     }
     
+    const [errorMessage, setErrorMessage] = useState(null)
+
+    const [buttonDisabled, setButtonDisable] = useState(false)
+
+    const userLogin = async (e) => {
+
+        e.preventDefault();
+
+        setButtonDisable(true)
+
+        try{
+            let response = await fetch('http://127.0.0.1:8000/user/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email: loginInfo.email, password : loginInfo.password})
+            })
+
+            let data = await response.json()
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                // Custom message for incorrect credentials
+                  throw new Error('Incorrect credentials. Please try again.');
+                } 
+                else {
+                // Custom general message for other errors
+                  throw new Error('An error occurred. Please try again later.');
+                }
+            }
+            else{
+                handleAuthSuccess(data, data.refresh)
+            }
+        }
+        catch(error){
+            setErrorMessage(error.message);
+            setButtonDisable(false)
+            setTimeout( () => {
+                setErrorMessage(null)
+            }, 4000)
+
+        }
+    }
+
+
+    const ErrorContainer = () => {
+        return (
+            <div className="flex justify-between items-center bg-red-200 w-[80%]  px-2 py-4 rounded-lg tab:w-full">
+                <p>{errorMessage}</p>
+                <img onClick={() => setErrorMessage(null)} className="h-[20px] cursor-pointer" src={close} alt="close icon" />
+            </div>
+        )
+    }
 
     return (
         <section className="flex min-h-full">
@@ -24,6 +80,7 @@ const SignIn = () => {
             <div className="className= w-[50%] mobile:w-full p-[3em] tab:p-[2em]">
                 <AuthHeader headingText = "Sign in" paragraphText = "Welcome back, kindly enter your login details" />
                 <form className="authForm" onSubmit={userLogin} method="post">
+                    {errorMessage && <ErrorContainer />}
                     <div className="inputContainer">
                         <label className="authLabel" htmlFor="email">Email Address:</label>
                         <input className="authInput" onChange={handleChange} name="email" id="email" type="email" required value={loginInfo.email}  />
@@ -33,7 +90,9 @@ const SignIn = () => {
                         <input className="authInput" onChange={handleChange} name="password" id="password" type="password" required value={loginInfo.password}  />
                     </div>
                     <div>
-                        <input className="authSubmitInput" type="submit" value="Sign in" />
+                        <button className="authSubmitInput" type="submit" disabled={buttonDisabled}>
+                            {buttonDisabled ? <Loader /> : "Sign in"}
+                        </button>
                     </div>
                 </form>
                 <div className="authFooterContainer">
