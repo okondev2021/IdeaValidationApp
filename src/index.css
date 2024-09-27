@@ -12,19 +12,12 @@
 
 ::-webkit-scrollbar-track{
     background-color: #fde2d9;
-    border-radius: 10px;
 }
   
 ::-webkit-scrollbar-thumb{
     background-color: #dd183b;
-    border-radius: 10px;
     cursor: pointer;
 }
-  
-::-webkit-scrollbar-corner{
-    background-color: #fde2d9;
-}
-
 
 
 /*  */
@@ -58,21 +51,29 @@
 
 /* ELEMENTS STYLES */
 h2{
-    @apply text-4xl font-medium mb-4
+    @apply text-4xl font-medium mb-4 mb-2 mobile:text-2xl
 }
 
 h3{
-    @apply text-2xl font-medium mt-4
+    @apply text-2xl font-medium mt-4 mb-2 mobile:text-lg
 }
 
 h4{
-    @apply text-2xl font-medium
+    @apply text-2xl font-medium  mobile:text-lg
 }
 
 h5{
-    @apply text-xl font-medium
+    @apply text-xl font-medium  mobile:text-base
 }
 
 h6{
     @apply text-lg font-medium
+}
+
+p, li{
+    @apply mobile:text-sm
+}
+
+strong{
+    @apply mobile:py-2
 }

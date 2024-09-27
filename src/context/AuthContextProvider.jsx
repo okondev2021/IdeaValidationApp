@@ -63,9 +63,6 @@ const AuthContextProvider = ({children}) => {
         else if(!response.ok && currentTime >= jwtDecode(authDataObject?.refresh).exp ){
             handleAuthFailure()
         }
-        else{
-            refreshToken()
-        }
                   
         if(loading){
             setLoading(false)
@@ -118,6 +115,7 @@ const AuthContextProvider = ({children}) => {
     let contextData = {
         LoggedinUser: loggedInUser,
         authDataObject:authDataObject,
+        loading: loading,
         setLoggedInUser : setLoggedInUser,
         setAuthDataObject: setAuthDataObject,
         userLogout: userLogout,

@@ -1,21 +1,31 @@
 import { useContext, useEffect, useState, useRef } from "react"
 import { Link } from "react-router-dom";
+import isOnline from 'is-online';
 import Validator from "../components/Validator";
 import Response from "../components/Response";
 import PreviousIdea from "../components/PreviousIdea";
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import add from '../assets/add.svg'
 import logout from '../assets/logout.svg'
+import Loader from "../components/Loader";
 
 const MainPage = () => {
 
-    const {LoggedinUser, userLogout, authDataObject} = useContext(AuthInfoContext)
+    const {LoggedinUser, userLogout, authDataObject, loading} = useContext(AuthInfoContext);
 
     const [validatedIdeaResponse, setValidatedIdeaResponse] = useState(null);
 
-    const [previouslyValidatedIdeas, setPreviouslyValidatedIdeas] = useState([])
+    const [previouslyValidatedIdeas, setPreviouslyValidatedIdeas] = useState(null);
 
-    const [buttonDisabled, setButtonDisable] = useState(false)
+    const [buttonDisabled, setButtonDisable] = useState(false);
+
+    const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+
+    const [error, setError] = useState(null)
+
+    const sideBar = useRef(null);
+
+    const mainBody = useRef(null);
 
 
     /**
@@ -36,9 +46,6 @@ const MainPage = () => {
 
         if(response.ok){
             setPreviouslyValidatedIdeas(data)
-        }
-        else{
-            console.log("error")
         }
     }
     
@@ -61,9 +68,6 @@ const MainPage = () => {
         if(response.ok){
             setValidatedIdeaResponse(data.bot_response)
         }
-        else{
-            console.log("error")
-        }
     }
     
 
@@ -73,35 +77,58 @@ const MainPage = () => {
      * server endpoint with user input data(idea and target_market) and sets the response to state if successful.
      */
     const validateIdea = async (e) => {
-        
-        e.preventDefault();
 
-        setButtonDisable(true);
-
-        const user_idea = e.target.idea.value
-        const user_target_market = e.target.targetMarket.value
+        try{
         
-        let botResponse = await fetch("http://127.0.0.1:8000/bot/validator/",{
-            method: "POST",
-            headers:{
-                'Content-Type': 'application/json',
-                ...(LoggedinUser && { 'Authorization': `Bearer ${authDataObject?.access}`})
-            },
-            body: JSON.stringify({
-                user_idea : user_idea,
-                user_target_market : user_target_market  
+            e.preventDefault();
+
+            setButtonDisable(true);
+
+            if(!navigator.onLine){
+                setButtonDisable(false);
+                throw new Error('Check your internet connection and try again');
+            }
+            else{
+                const online = await isOnline();
+                if (!online) {
+                    setButtonDisable(false);
+                    throw new Error('Check your internet connection and try again');
+                }
+            }
+
+            const user_idea = e.target.idea.value
+            const user_target_market = e.target.targetMarket.value
+            
+            let botResponse = await fetch("http://127.0.0.1:8000/bot/validator/",{
+                method: "POST",
+                headers:{
+                    'Content-Type': 'application/json',
+                    ...(LoggedinUser && { 'Authorization': `Bearer ${authDataObject?.access}`})
+                },
+                body: JSON.stringify({
+                    user_idea : user_idea,
+                    user_target_market : user_target_market  
+                })
             })
-        })
 
-        let data = await botResponse.json()
+            let data = await botResponse.json()
 
-        if(botResponse.ok){
-            setValidatedIdeaResponse(data.response)
-            setButtonDisable(false);
+            if(botResponse.ok){
+                setValidatedIdeaResponse(data.response)
+                setButtonDisable(false);
+            }
+            else{
+                console.log(data, botResponse)
+            }
         }
-        else{
+        catch(err){
+            setError(err.message)
+            setTimeout( () => {
+                setError(null)
+            }, 5000)
+        }
+        finally{
             setButtonDisable(false);
-            console.log("Error getting response")
         }
     }
 
@@ -116,18 +143,33 @@ const MainPage = () => {
         if (LoggedinUser){
             getPreviousValidatedIdeas()
         }
-    }, [validatedIdeaResponse])
+    }, [validatedIdeaResponse, loading])
+
+
+    const navBar = () => {
+        setIsSideBarOpen(!isSideBarOpen)
+    }
+
+
+    const Hamburger = () => {
+        return(
+            <div onClick={navBar} className="flex flex-col gap-1 px-2 cursor-pointer mobile:gap-2">
+                <div className="w-[25px] h-[2px] bg-black"></div>
+                <div className="w-[25px] h-[2px] mobile:w-[17px] bg-black"></div>
+                <div className="w-[25px] h-[2px] bg-black mobile:hidden"></div>
+            </div>
+        )
+    }
+
 
 
     return (
         <div className="flex min-h-screen ">
             {
                 LoggedinUser &&
-                <aside className="w-[20vw] bg-redlight fixed h-screen flex flex-col px-4 py-6 z-40">
-                    <div className="flex flex-col gap-1 px-2 hamburger icons">
-                        <div className="w-[25px] h-[2px] bg-black"></div>
-                        <div className="w-[25px] h-[2px] bg-black"></div>
-                        <div className="w-[25px] h-[2px] bg-black"></div>
+                <aside ref={sideBar} className={`overflow-x-hidden text-nowrap bg-redlight fixed h-screen flex flex-col py-6 z-40 transition-all duration-300 ${isSideBarOpen ? "px-4 w-[20vw] tab:w-[40vw] mobile:w-[70vw] ease-linear " : "w-[0vw]"}`}>
+                    <div className={``}>
+                        <Hamburger />
                     </div>
                     <div className="mt-[2em] flex items-center justify-between hover:bg-red-100 cursor-pointer px-2 py-3 rounded-lg" onClick={validateNewIdea}>
                         <p>Validate Idea</p>
@@ -136,8 +178,9 @@ const MainPage = () => {
                     <div className="mt-[1em]">
                         <h1 className="px-2 py-3 text-sm font-semibold ">Validated Ideas</h1>
                     </div>
-                    <div className=" relative overflow-y-auto h-3/6 flex flex-col gap-[0.5em] text-sm">
-                        {previouslyValidatedIdeas.length >= 1 ?
+                    <div className={`overflow-x-hidden relative overflow-y-auto h-3/6 gap-[0.5em] text-sm ${previouslyValidatedIdeas ? "flex flex-col" : ""}`}>
+                        {previouslyValidatedIdeas ? 
+                            previouslyValidatedIdeas.length >= 1 ?
                             previouslyValidatedIdeas.map( (previousIdeas) => (
                                 <PreviousIdea 
                                     key={previousIdeas.id} 
@@ -146,8 +189,10 @@ const MainPage = () => {
                                 />
                                     
                             ))
-                         : 
-                            <p>No previous ideas</p>
+                            : 
+                            <p>No previous ideas</p>                        
+                        : 
+                            <Loader /> 
                         }
                     </div>
                     <div className="absolute auth bottom-6">
@@ -159,20 +204,25 @@ const MainPage = () => {
                 </aside>
             }
 
-            <main className={`relative flex flex-col ${LoggedinUser ? 'w-[80vw] ml-[20%]': 'w-[100vw] ml-[0%]'}`}>
-                <header className="sticky top-0 flex items-center justify-between w-full px-8 py-5 bg-white shadow-sm">
+            <main ref={mainBody} className={`relative flex flex-col transition-all duration-300 ${LoggedinUser && isSideBarOpen ? 'w-[80vw] ml-[20%] tab:w-[60vw] tab:ml-[40%]' : "w-[100vw] ml-[0%] mobile:w-[100vw]"} mobile:w-[100vw] mobile:ml-[0%] `}>
+                <header className="sticky top-0 flex items-center justify-between w-full px-8 py-5 bg-white shadow-sm mobile:px-2">
+                    {  LoggedinUser &&   
+                        <div className={`${!isSideBarOpen ? "block" : "hidden"}`}>
+                            <Hamburger />
+                        </div>
+                    }
                     <div>
-                        <h1 className="text-4xl font-bold text-redbold">StartupTrybe</h1>
+                        <h1 className="text-4xl font-bold text-redbold mobile:text-lg">StartupTrybe</h1>
                     </div>
                     <div>
                         {LoggedinUser ? 
-                            <h1 className="text-lg font-bold">{LoggedinUser}</h1> : 
-                            <Link to="/signup" className="px-6 py-2 font-semibold text-white bg-redbold rounded-3xl">Create Account</Link>
+                            <h1 className="text-lg font-bold mobile:text-base">{LoggedinUser}</h1> : 
+                            <Link to="/signup" className="px-6 py-2 font-semibold text-white bg-redbold rounded-3xl mobile:text-sm mobile:px-3">Create Account</Link>
                         }
                     </div>
                 </header>
-                <section className={`flex flex-col h-full ${!validatedIdeaResponse ? 'items-center justify-center' : ""}`}>
-                    {validatedIdeaResponse ? <Response botResponse={validatedIdeaResponse} validateNewIdeaFunct={validateNewIdea} /> : <Validator validateIdea={validateIdea} buttonDisabled={buttonDisabled} />} 
+                <section className="flex flex-col h-full">
+                    {validatedIdeaResponse ? <Response botResponse={validatedIdeaResponse} validateNewIdeaFunct={validateNewIdea} /> : <Validator validateIdea={validateIdea} buttonDisabled={buttonDisabled} isSideBarOpen = {isSideBarOpen} errorMessage = {error} />} 
                 </section>
             </main>
         </div>

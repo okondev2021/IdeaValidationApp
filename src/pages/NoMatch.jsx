@@ -1,7 +1,14 @@
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 const NoMatch = () => {
-    return(
-      <div> ERROR 404</div>
-    )
+  const navigate = useNavigate()
+
+  useEffect( () => {
+    navigate("/")
+  })
+  return(
+    <div> PAGE NOT FOUND</div>
+  )
 }
 
 
