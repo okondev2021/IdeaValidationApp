@@ -85,14 +85,12 @@ const MainPage = () => {
             setButtonDisable(true);
 
             if(!navigator.onLine){
-                setButtonDisable(false);
-                throw new Error('Check your internet connection and try again');
+                throw new Error();
             }
             else{
                 const online = await isOnline();
                 if (!online) {
-                    setButtonDisable(false);
-                    throw new Error('Check your internet connection and try again');
+                    throw new Error()
                 }
             }
 
@@ -118,11 +116,14 @@ const MainPage = () => {
                 setButtonDisable(false);
             }
             else{
-                console.log(data, botResponse)
+                setError("This request is taking longer than expected, please try again.")
+                setTimeout( () => {
+                    setError(null)
+                }, 5000)
             }
         }
         catch(err){
-            setError(err.message)
+            setError("Check your internet connection and try again")
             setTimeout( () => {
                 setError(null)
             }, 5000)
