@@ -3,6 +3,7 @@ import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import MainPage from "./pages/MainPage"
 import NoMatch from "./pages/NoMatch"
+import StreamComponent from "./pages/StreamComponent"
 import AuthContextProvider from "./context/AuthContextProvider"
 
 
@@ -15,7 +16,9 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
+            <Route path="streaming" element={<StreamComponent />} />
             <Route path="*" element={<NoMatch />} />
+            
           </Routes>
         </AuthContextProvider>
       </Router>

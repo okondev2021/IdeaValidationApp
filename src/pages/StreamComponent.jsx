@@ -20,26 +20,29 @@ const StreamComponent = () => {
         }).filter(parsed => parsed !== null);
     };
 
-    const fetchData = async (message) => {
+    const fetchData = async (e) => {
+
+        e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/teacher/threads/messages/', {
+            const response = await fetch("http://127.0.0.1:8000/bot/validator/", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyMjU0NzYsInVzZXJfaWQiOiJlZDFjYjVmYS1hNWI3LTQzMzQtYmMyZi0wZDlkOWFjMzIyNzcifQ.Vx77JGhiFuLa4bioRNMyRpniMQhy5DcTvfPaX_TmqZY"
                 },
                 body: JSON.stringify({
-                    message: message,
-                    botType: "Communication"
+                    user_idea : "A platform that writes novels from scratch using AI. The system uses deep learning to generate plotlines, character development, and dialogue without any human input. It claims to produce bestsellers in any genre by following popular trends in literature.",
+                    user_target_market : "Aspiring authors, Publishers, Readers looking for AI-generated content"
                 })
             });
 
             if (!response.ok) {
                 throw new Error('Failed to fetch stream');
             }
+
+            console.log(response)
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -61,12 +64,17 @@ const StreamComponent = () => {
                 }
             }
 
-        } catch (err) {
+
+        } 
+
+        catch (err) {
             console.error(err);
             setError('Failed to fetch stream');
         }
 
-        setIsLoading(false);
+        finally{
+            setIsLoading(false);
+        }
     };
 
     const handleInputChange = (event) => {
@@ -74,11 +82,7 @@ const StreamComponent = () => {
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-        if (inputMessage.trim() !== '') {
-            setData(''); // Clear previous data
-            fetchData(inputMessage);
-        }
+        fetchData();
     };
 
     return (
@@ -91,7 +95,7 @@ const StreamComponent = () => {
                 rows={10}
                 cols={50}
             />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={fetchData}>
                 <input
                     type="text"
                     value={inputMessage}
