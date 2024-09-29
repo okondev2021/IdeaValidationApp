@@ -8,7 +8,7 @@ import AuthContextProvider from "./context/AuthContextProvider"
 
 function App() {
   return (
-    <div className="h-screen">
+    <div className="h-screen font-body1">
       <Router>
         <AuthContextProvider>
           <Routes>

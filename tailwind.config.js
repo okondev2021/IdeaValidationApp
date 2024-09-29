@@ -11,6 +11,9 @@ export default {
       'mobile': {'max': '430px'},
       // => @media (max-width: 430px) { ... }
     }, 
+    fontFamily:{
+      "body1": ["Roboto", "sans-serif"],
+    },
     extend: {
       colors: {
         redbold: "#dd183b",
