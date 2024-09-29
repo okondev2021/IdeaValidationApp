@@ -16,15 +16,27 @@ const AuthContextProvider = ({children}) => {
         localStorage.getItem("AuthToken") ? jwtDecode(JSON.parse(localStorage.getItem("AuthToken")).refresh).full_name : null
     )
 
-
     const [authDataObject, setAuthDataObject] = useState(
         localStorage.getItem("AuthToken") ? JSON.parse(localStorage.getItem("AuthToken")) : null
     )
 
-
     const [loading, setLoading] = useState(true)
 
 
+
+    /**
+     * Function to handle successful authentication by storing authentication data and updating the app's state.
+     * 
+     * This function is called when authentication is successful, such as after login or token refresh. It performs the following actions:
+     * - Stores the authentication tokens in `localStorage`.
+     * - Decodes the refresh token to retrieve the user's full name and updates the logged-in user's state.
+     * - Updates the authentication data object (`authDataObject`) with the new tokens.
+     * - Redirects the user to the home page ("/") after successful authentication.
+     * 
+     * @function handleAuthSuccess
+     * @param {Object} data - The authentication data, typically including access and refresh tokens.
+     * @param {string} refresh - The refresh token, used to decode the user's details.
+     */
     const handleAuthSuccess = (data, refresh) => {
         localStorage.setItem("AuthToken",JSON.stringify(data))
         setLoggedInUser(jwtDecode(refresh).full_name)
@@ -32,6 +44,17 @@ const AuthContextProvider = ({children}) => {
         navigate("/")
     }
 
+    /**
+     * Function to handle authentication failure by clearing authentication data.
+     * 
+     * This function is triggered when the user's authentication fails, such as when their tokens expire or the refresh process fails.
+     * It performs the following actions:
+     * - Removes the stored authentication tokens from `localStorage`.
+     * - Clears the logged-in user state by setting it to `null`.
+     * - Resets the `authDataObject` to `null`, effectively logging the user out.
+     * 
+     * @function handleAuthFailure
+     */
 
     const handleAuthFailure = () => {
         localStorage.removeItem("AuthToken");
@@ -39,6 +62,18 @@ const AuthContextProvider = ({children}) => {
         setAuthDataObject(null);
     }
 
+
+    /**
+     * Asynchronous function to refresh the user's access token using their refresh token.
+     * 
+     * This function checks the current time and attempts to send the refresh token to the backend's refresh endpoint. 
+     * If successful, it updates the authentication object (`authDataObject`) and stores the new tokens in localStorage.
+     * If the refresh token has expired, it triggers an authentication failure by calling `handleAuthFailure()`.
+     * Additionally, it sets the `loading` state to false once the token refresh process is complete.
+     * 
+     * @function refreshToken
+     * @returns {Promise<void>} - A promise that resolves when the token refresh process is complete.
+     */
 
     const refreshToken = async () => {
 
@@ -70,6 +105,15 @@ const AuthContextProvider = ({children}) => {
     }
 
 
+     /**
+     * Asynchronous function to log out a user by sending a POST request to the backend's logout endpoint.
+     * The function uses the user's access and refresh tokens stored in `authDataObject` for authentication.
+     * Upon a successful logout (response.ok), it clears the user's authentication data using `handleAuthFailure()`.
+     * If the request fails, it redirects the user to the home page ('/').
+     * 
+     * @function userLogout
+     * @returns {Promise<void>} - A promise that resolves when the logout process is complete.
+     */
     const userLogout = async () => {
 
         let response = await fetch('http://127.0.0.1:8000/user/logout/', {
@@ -94,6 +138,21 @@ const AuthContextProvider = ({children}) => {
     }
 
 
+
+    /**
+     * useEffect hook to manage token refresh logic.
+     * 
+     * This effect ensures that the user's access token is refreshed periodically, maintaining the user's authentication session.
+     * When the component is mounted or when `authDataObject` or `loading` changes, the following actions occur:
+     * - If `loading` is true and `authDataObject` exists, the `refreshToken()` function is called immediately to refresh the token.
+     * - A setInterval is set up to call `refreshToken()` every 7 minutes (as the access token expires after 8 minutes).
+     * - The interval is cleared when the component unmounts or when the effect re-runs to avoid multiple intervals running simultaneously.
+     * 
+     * @function useEffect
+     * @param {Array} dependencies - [authDataObject, loading]
+     * - `authDataObject`: Contains the user's authentication details including access and refresh tokens.
+     * - `loading`: A flag indicating whether the app is still loading.
+     */
     useEffect(() => {
         if(loading && authDataObject){
             refreshToken()
@@ -111,7 +170,7 @@ const AuthContextProvider = ({children}) => {
 
     
     /* The `contextData` object is being created to store various values and functions related to
-    authentication. */
+    authentication that will be available to all context consumers. */
     let contextData = {
         LoggedinUser: loggedInUser,
         authDataObject:authDataObject,

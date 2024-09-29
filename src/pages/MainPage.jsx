@@ -29,10 +29,15 @@ const MainPage = () => {
 
 
     /**
-     * The function `getPreviousValidatedIdeas` fetches previously validated ideas  and
-     * updates the state with the retrieved data if the response is successful.
+     * Asynchronous function to retrieve all previously validated business ideas for the logged-in user.
+     * 
+     * This function sends a GET request to the server to fetch a list of all the user's previously validated ideas.
+     * The retrieved data is then stored in the application state for displaying to the user.
+     * 
+     * @function getPreviousValidatedIdeas
+     * @returns {Promise<void>} - A promise that resolves when the fetch operation completes.
      */
-    // This function allows users
+
     const getPreviousValidatedIdeas = async () => {
         
         let response  = await fetch("http://127.0.0.1:8000/bot/validator/", {
@@ -49,11 +54,17 @@ const MainPage = () => {
         }
     }
     
-    // Only accessible to logged in users, this function fetches previous validated ideas
     /**
-     * The function `readPreviousIdea` fetches data from the specified endpoint and sets the response data to a
-     * state variable if the response is successful.
+     * Asynchronous function to retrieve and display the validation response of a previously submitted idea.
+     * 
+     * This function sends a GET request to fetch the validation response of a specific idea by its `id`. 
+     * If the request is successful, the function updates the UI state with the retrieved validation response.
+     * 
+     * @function readPreviousIdea
+     * @param {string|number} id - The unique identifier of the previously submitted idea.
+     * @returns {Promise<void>} - A promise that resolves when the fetch operation completes.
      */
+
     const readPreviousIdea = async (id) => {
 
         let response = await fetch(`http://127.0.0.1:8000/bot/validator/${id}/`, {
@@ -71,10 +82,15 @@ const MainPage = () => {
     }
     
 
-    // Sends user's input as request and returns a break down of their idea
     /**
-     * The function `validateIdea` is an asynchronous function that sends a POST request to the
-     * server endpoint with user input data(idea and target_market) and sets the response to state if successful.
+     * Asynchronous function to validate a user's business idea using an external bot API.
+     * 
+     * This function handles the form submission event, checks the user's internet connection, and sends the user's business idea and target market
+     * to an API for validation. It also manages UI states such as button disabling, error messages, and successful responses.
+     * 
+     * @function validateIdea
+     * @param {Event} e - The form submission event.
+     * @returns {Promise<void>} - A promise that resolves when the validation process is complete.
      */
     const validateIdea = async (e) => {
 
