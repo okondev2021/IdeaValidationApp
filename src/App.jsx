@@ -18,7 +18,6 @@ function App() {
             <Route path="signup" element={<SignUp />} />
             <Route path="streaming" element={<StreamComponent />} />
             <Route path="*" element={<NoMatch />} />
-            
           </Routes>
         </AuthContextProvider>
       </Router>

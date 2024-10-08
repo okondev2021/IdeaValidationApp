@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import { marked } from 'marked';
+import { useNavigate } from 'react-router-dom';
 
 const StreamComponent = () => {
     const [data, setData] = useState('');
-    const [inputMessage, setInputMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+
+    const navigate = useNavigate()
 
     const parseSSEData = (chunk) => {
         // Split chunk by newline to handle multiple JSON objects
         const dataLines = chunk.trim().split('\n').map(line => line.replace(/^data: /, ''));
         return dataLines.map(jsonData => {
             try {
+                console.log("parseFunc", jsonData)
                 return JSON.parse(jsonData);
             } catch (e) {
                 console.error('JSON parse error:', e);
@@ -24,7 +27,6 @@ const StreamComponent = () => {
 
         e.preventDefault();
         setIsLoading(true);
-        setError(null);
 
         try {
             const response = await fetch("http://127.0.0.1:8000/bot/validator/", {
@@ -42,8 +44,6 @@ const StreamComponent = () => {
                 throw new Error('Failed to fetch stream');
             }
 
-            console.log(response)
-
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let done = false;
@@ -58,7 +58,7 @@ const StreamComponent = () => {
                     const parsedChunks = parseSSEData(chunk);
                     parsedChunks.forEach(parsedChunk => {
                         if (parsedChunk && parsedChunk.message) {
-                            setData(prevData => prevData + parsedChunk.message);
+                            setData(prevData => prevData + marked(parsedChunk.message));
                         }
                     });
                 }
@@ -68,44 +68,27 @@ const StreamComponent = () => {
         } 
 
         catch (err) {
-            console.error(err);
-            setError('Failed to fetch stream');
+            console.error("Failed to fetch stream", err);
         }
 
         finally{
             setIsLoading(false);
+            console.log(data)
         }
     };
 
-    const handleInputChange = (event) => {
-        setInputMessage(event.target.value);
-    };
-
-    const handleSubmit = (event) => {
-        fetchData();
-    };
-
     return (
-        <div>
-            <h1>Streaming Data</h1>
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            <textarea
-                value={data}
-                readOnly
-                rows={10}
-                cols={50}
-            />
+        <div className="">
+            
             <form onSubmit={fetchData}>
-                <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={handleInputChange}
-                    placeholder="Enter your message"
-                />
-                <button type="submit" disabled={isLoading}>
+                <button className='bg-green-600yy' type="submit" disabled={isLoading}>
                     {isLoading ? 'Loading...' : 'Send'}
                 </button>
             </form>
+
+            <button onClick={ () => navigate("/")}>Go Home</button>
+
+            <div className ='w-screen min-h-screen' dangerouslySetInnerHTML={{ __html: data }} />
         </div>
     );
 };
