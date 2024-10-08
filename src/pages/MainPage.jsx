@@ -19,9 +19,11 @@ const MainPage = () => {
 
     const [buttonDisabled, setButtonDisable] = useState(false);
 
-    const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+    const screenWidth = useRef(window.innerWidth);
 
-    const [error, setError] = useState(null)
+    const [isSideBarOpen, setIsSideBarOpen] = useState(screenWidth.current >= 800 ? true : false);;
+
+    const [error, setError] = useState(null);
 
     const sideBar = useRef(null);
 
@@ -245,6 +247,5 @@ const MainPage = () => {
         </div>
     )
 }
-
 
 export default MainPage
