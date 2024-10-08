@@ -74,6 +74,10 @@ p, li{
     @apply mobile:text-sm
 }
 
+p > strong{
+    @apply text-xl
+}
+
 strong{
     @apply mobile:py-2
 }

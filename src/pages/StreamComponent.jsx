@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { marked } from 'marked';
 import { useNavigate } from 'react-router-dom';
 
 const StreamComponent = () => {
     const [data, setData] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const tempStore = useRef("")
 
     const navigate = useNavigate()
 
     const parseSSEData = (chunk) => {
+        chunk.replace("\n", "");
+        console.log('Chunk:', chunk);
         // Split chunk by newline to handle multiple JSON objects
         const dataLines = chunk.trim().split('\n').map(line => line.replace(/^data: /, ''));
-        return dataLines.map(jsonData => {
+        const finalOutput = dataLines.map(jsonData => {
             try {
-                console.log("parseFunc", jsonData)
                 return JSON.parse(jsonData);
             } catch (e) {
-                console.error('JSON parse error:', e);
-                console.error(jsonData)
                 return null;
             }
         }).filter(parsed => parsed !== null);
+        return finalOutput
     };
 
     const fetchData = async (e) => {
@@ -53,18 +54,16 @@ const StreamComponent = () => {
                 done = readerDone;
                 if (value) {
                     const chunk = decoder.decode(value, { stream: true });
-                    console.log('Chunk:', chunk);
-
+                    
                     const parsedChunks = parseSSEData(chunk);
                     parsedChunks.forEach(parsedChunk => {
                         if (parsedChunk && parsedChunk.message) {
-                            setData(prevData => prevData + marked(parsedChunk.message));
+                            tempStore.current = tempStore.current + parsedChunk.message
+                            setData(marked(tempStore.current))
                         }
                     });
                 }
             }
-
-
         } 
 
         catch (err) {
@@ -73,7 +72,6 @@ const StreamComponent = () => {
 
         finally{
             setIsLoading(false);
-            console.log(data)
         }
     };
 
