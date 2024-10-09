@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react"
 import { Link } from "react-router-dom";
+import { marked } from 'marked';
 import isOnline from 'is-online';
 import Validator from "../components/Validator";
 import Response from "../components/Response";
@@ -8,6 +9,7 @@ import { AuthInfoContext } from "../context/AuthContextProvider"
 import add from '../assets/add.svg'
 import logout from '../assets/logout.svg'
 import Loader from "../components/Loader";
+import parseSSEData from "../components/ParseSSE";
 
 const MainPage = () => {
 
@@ -17,11 +19,15 @@ const MainPage = () => {
 
     const [previouslyValidatedIdeas, setPreviouslyValidatedIdeas] = useState(null);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [buttonDisabled, setButtonDisable] = useState(false);
 
     const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
     const [error, setError] = useState(null)
+
+    const tempStore = useRef("")
 
     const sideBar = useRef(null);
 
@@ -78,19 +84,21 @@ const MainPage = () => {
      */
     const validateIdea = async (e) => {
 
-        try{
-        
-            e.preventDefault();
+        e.preventDefault();
+        setButtonDisable(true);
 
-            setButtonDisable(true);
+        const connectionError = new Error("Check your internet connection and try again");
+
+
+        try{
 
             if(!navigator.onLine){
-                throw new Error();
+                throw connectionError
             }
             else{
                 const online = await isOnline();
                 if (!online) {
-                    throw new Error()
+                    throw connectionError
                 }
             }
 
@@ -109,21 +117,33 @@ const MainPage = () => {
                 })
             })
 
-            let data = await botResponse.json()
-
             if(botResponse.ok){
-                setValidatedIdeaResponse(data.response)
-                setButtonDisable(false);
+                const reader = botResponse.body.getReader();
+                const decoder = new TextDecoder();
+    
+                while (true) {
+                    const { value, done } = await reader.read();  // Destructure 'done' directly
+                    if (done) break;  // Exit the loop if done
+    
+                    // Decode and accumulate the chunk
+                    const chunk = decoder.decode(value, { stream: true });
+                    
+                    // Parse and process the chunk
+                    const parsedChunks = parseSSEData(chunk);
+                    parsedChunks.forEach(parsedChunk => {
+                        if (parsedChunk?.message) {
+                            tempStore.current += parsedChunk.message;  // Update tempStore
+                            setValidatedIdeaResponse(marked(tempStore.current));  // Update validatedIdeaResponse State with the marked content
+                        }
+                    });
+                }
             }
             else{
-                setError("This request is taking longer than expected, please try again.")
-                setTimeout( () => {
-                    setError(null)
-                }, 5000)
+                throw connectionError
             }
         }
         catch(err){
-            setError("Check your internet connection and try again")
+            setError(err.message)
             setTimeout( () => {
                 setError(null)
             }, 5000)
@@ -136,6 +156,7 @@ const MainPage = () => {
     // Brings up the form ui for users to validate a new idea
     const validateNewIdea = () => {
         setValidatedIdeaResponse(null)
+        tempStore.current = ""
     }
 
 
