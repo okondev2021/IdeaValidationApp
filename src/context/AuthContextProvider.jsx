@@ -79,7 +79,7 @@ const AuthContextProvider = ({children}) => {
 
         const currentTime = Math.floor(Date.now() / 1000);
 
-        let response = await fetch('http://127.0.0.1:8000/user/refresh/', {
+        let response = await fetch('https://startuptrybe-bot.onrender.com/user/refresh/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

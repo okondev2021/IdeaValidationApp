@@ -43,7 +43,7 @@ const SignUp = () => {
                 throw new Error("Passwords do not match.")
             }
             
-            let response = await fetch('http://127.0.0.1:8000/user/register/', {
+            let response = await fetch('https://startuptrybe-bot.onrender.com/user/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json'
