@@ -215,10 +215,10 @@ const MainPage = () => {
                         }
                     </div>
                     <div className="absolute auth bottom-6">
-                        <div onClick={userLogout} className="flex gap-4 cursor-pointer">
+                        <button onClick={userLogout} className="flex gap-4 cursor-pointer">
                             <img className="h-[25px] icons" src={logout} alt="" /> 
                             <p>Log Out</p>
-                        </div>  
+                        </button>  
                     </div>
                 </aside>
             }
