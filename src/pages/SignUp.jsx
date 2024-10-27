@@ -15,11 +15,7 @@ const SignUp = () => {
         email: "",
         password: "",
         confirmpassword: "",
-        
-
     })
-
-    console.table(signUpInfo)
 
     const [errorMessage, setErrorMessage] = useState(null)
     
