@@ -11,6 +11,8 @@ import Loader from "../components/Loader";
 
 const MainPage = () => {
 
+    const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
+
     const {LoggedinUser, userLogout, authDataObject, loading} = useContext(AuthInfoContext);
 
     const [validatedIdeaResponse, setValidatedIdeaResponse] = useState(null);
@@ -42,7 +44,7 @@ const MainPage = () => {
 
     const getPreviousValidatedIdeas = async () => {
         
-        let response  = await fetch("https://startuptrybe-bot.onrender.com/bot/validator/", {
+        let response  = await fetch(`${apiUrl}/bot/validator/`, {
             method: "GET",
             headers:{
                 'Content-Type': 'application/json',
@@ -69,7 +71,7 @@ const MainPage = () => {
 
     const readPreviousIdea = async (id) => {
 
-        let response = await fetch(`https://startuptrybe-bot.onrender.com/bot/validator/${id}/`, {
+        let response = await fetch(`${apiUrl}/bot/validator/${id}/`, {
             method: "GET",
             headers:{
                 'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ const MainPage = () => {
             const user_idea = e.target.idea.value
             const user_target_market = e.target.targetMarket.value
             
-            let botResponse = await fetch("https://startuptrybe-bot.onrender.com/bot/validator/",{
+            let botResponse = await fetch(`${apiUrl}/bot/validator/`,{
                 method: "POST",
                 headers:{
                     'Content-Type': 'application/json',

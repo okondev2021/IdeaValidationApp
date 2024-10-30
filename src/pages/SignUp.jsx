@@ -1,12 +1,18 @@
-import { useState, useContext,} from "react"
+import { useState, useContext,useRef} from "react"
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import { Link } from "react-router-dom"
 import AuthText from "../components/AuthText"
 import AuthHeader from "../components/AuthHeader"
 import close from '../assets/close.svg'
 import Loader from "../components/Loader"
+import Reveal from "../components/Reveal"
 
 const SignUp = () => {
+
+    const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
+
+    const passwordInput1 = useRef(null)
+    const passwordInput2 = useRef(null)
 
     const {handleAuthSuccess} = useContext(AuthInfoContext)
 
@@ -21,7 +27,6 @@ const SignUp = () => {
     
     const handleChange = (e) => {
         setSignUpInfo({...signUpInfo, [e.target.name]: e.target.value})
-
     }
 
     const [buttonDisabled, setButtonDisable] = useState(false)
@@ -39,7 +44,7 @@ const SignUp = () => {
                 throw new Error("Passwords do not match.")
             }
             
-            let response = await fetch('https://startuptrybe-bot.onrender.com/user/register/', {
+            let response = await fetch(`${apiUrl}/user/register/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json'
@@ -95,13 +100,21 @@ const SignUp = () => {
                         <label className="authLabel" htmlFor="email">Email Address:</label>
                         <input className="authInput" onChange={handleChange} id="email" type="email" name="email" required />
                     </div>
+
+
                     <div className="inputContainer">
                         <label className="authLabel" htmlFor="password">Password:</label>
-                        <input className="authInput" onChange={handleChange} id="password" type="password" name="password" required />
+                        <div className="authPasswordContainer">
+                            <input ref={passwordInput1} className="authPasswordInput" onChange={handleChange} name="password" id="password" type="password" required   />
+                            <Reveal inputField={passwordInput1} />
+                        </div>
                     </div>
                     <div className="inputContainer">
                         <label className="authLabel" htmlFor="confirmpassword">Confirm Password:</label>
-                        <input className="authInput" onChange={handleChange} id="confirmpassword" type="password" name="confirmpassword" required />
+                        <div className="authPasswordContainer">
+                            <input ref={passwordInput2} className="authPasswordInput" onChange={handleChange} id="confirmpassword" type="password" name="confirmpassword" required   />
+                            <Reveal inputField={passwordInput2} />
+                        </div>
                     </div>
                     <div>
                         <button className="authSubmitInput " type="submit" disabled={buttonDisabled}>

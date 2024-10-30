@@ -1,12 +1,17 @@
-import { useState, useContext } from "react"
+import { useState, useContext, useRef} from "react"
 import { Link } from "react-router-dom"
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import AuthText from "../components/AuthText"
 import AuthHeader from "../components/AuthHeader"
 import close from '../assets/close.svg'
 import Loader from "../components/Loader"
+import Reveal from "../components/Reveal"
 
 const SignIn = () => {
+
+    const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
+
+    const passwordInput = useRef(null)
 
     const {handleAuthSuccess} = useContext(AuthInfoContext)
 
@@ -30,7 +35,7 @@ const SignIn = () => {
         setButtonDisable(true)
 
         try{
-            let response = await fetch('https://startuptrybe-bot.onrender.com/user/login/', {
+            let response = await fetch(`${apiUrl}/user/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,7 +92,10 @@ const SignIn = () => {
                     </div>
                     <div className="inputContainer">
                         <label className="authLabel" htmlFor="password">Password:</label>
-                        <input className="authInput" onChange={handleChange} name="password" id="password" type="password" required value={loginInfo.password}  />
+                        <div className="authPasswordContainer">
+                            <input ref={passwordInput} className="authPasswordInput" onChange={handleChange} name="password" id="password" type="password" required value={loginInfo.password}  />
+                            <Reveal inputField={passwordInput} />
+                        </div>
                     </div>
                     <div>
                         <button className="authSubmitInput" type="submit" disabled={buttonDisabled}>

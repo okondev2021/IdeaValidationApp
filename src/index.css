@@ -33,6 +33,14 @@
     @apply h-[50px] border border-grayBlue rounded-2xl pl-4
 }
 
+.authPasswordContainer{
+    @apply h-[50px] border border-grayBlue rounded-2xl flex  
+}
+
+.authPasswordInput{
+    @apply pl-4 border-none outline-none h-full w-[90%] rounded-l-2xl
+}
+
 .authLabel{
     @apply text-black001 font-semibold 
 }

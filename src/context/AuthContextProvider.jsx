@@ -11,6 +11,7 @@ const AuthContextProvider = ({children}) => {
 
     const navigate = useNavigate()
 
+    const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
     const [loggedInUser, setLoggedInUser] = useState(
         localStorage.getItem("AuthToken") ? jwtDecode(JSON.parse(localStorage.getItem("AuthToken")).refresh).full_name : null
@@ -79,7 +80,7 @@ const AuthContextProvider = ({children}) => {
 
         const currentTime = Math.floor(Date.now() / 1000);
 
-        let response = await fetch('https://startuptrybe-bot.onrender.com/user/refresh/', {
+        let response = await fetch(`${apiUrl}/user/refresh/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ const AuthContextProvider = ({children}) => {
      */
     const userLogout = async () => {
 
-        let response = await fetch('https://startuptrybe-bot.onrender.com/user/logout/', {
+        let response = await fetch(`${apiUrl}/user/logout/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
