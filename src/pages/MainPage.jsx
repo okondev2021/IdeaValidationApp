@@ -166,6 +166,10 @@ const MainPage = () => {
         }
     }, [validatedIdeaResponse, loading])
 
+    useEffect( () => {
+        window.scrollTo(0,0);
+    }, [])
+
 
     const navBar = () => {
         setIsSideBarOpen(!isSideBarOpen)

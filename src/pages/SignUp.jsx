@@ -1,4 +1,4 @@
-import { useState, useContext,useRef} from "react"
+import { useState, useContext,useRef, useEffect} from "react"
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import { Link } from "react-router-dom"
 import AuthText from "../components/AuthText"
@@ -83,6 +83,9 @@ const SignUp = () => {
         )
     }
 
+    useEffect( () => {
+        window.scrollTo(0,0);
+    }, [])
 
     
     return (
@@ -100,8 +103,6 @@ const SignUp = () => {
                         <label className="authLabel" htmlFor="email">Email Address:</label>
                         <input className="authInput" onChange={handleChange} id="email" type="email" name="email" required />
                     </div>
-
-
                     <div className="inputContainer">
                         <label className="authLabel" htmlFor="password">Password:</label>
                         <div className="authPasswordContainer">

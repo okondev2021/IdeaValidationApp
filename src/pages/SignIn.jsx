@@ -1,4 +1,4 @@
-import { useState, useContext, useRef} from "react"
+import { useState, useContext, useRef, useEffect} from "react"
 import { Link } from "react-router-dom"
 import { AuthInfoContext } from "../context/AuthContextProvider"
 import AuthText from "../components/AuthText"
@@ -19,6 +19,10 @@ const SignIn = () => {
         email : "",
         password : ""
     })
+
+    useEffect( () => {
+        window.scrollTo(0,0);
+    }, [])
 
     const handleChange = (e) => {
         setLoginInfo({...loginInfo, [e.target.name]: e.target.value})
