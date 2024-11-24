@@ -80,6 +80,10 @@ h6{
 }
 
 p, li{
+    @apply text-base
+}
+
+li{
     @apply mobile:text-sm
 }
 

@@ -43,6 +43,7 @@ const MainPage = () => {
      */
 
     const getPreviousValidatedIdeas = async () => {
+
         
         let response  = await fetch(`${apiUrl}/bot/validator/`, {
             method: "GET",
@@ -132,8 +133,16 @@ const MainPage = () => {
             let data = await botResponse.json()
 
             if(botResponse.ok){
-                setValidatedIdeaResponse(data.response)
-                setButtonDisable(false);
+                if(data.response == null){
+                    setError("Pleas try again, this model is currently down.")
+                    setTimeout( () => {
+                        setError(null)
+                    }, 5000)
+                }
+                else{
+                    setValidatedIdeaResponse(data.response)
+                    setButtonDisable(false);
+                }
             }
             else{
                 setError("This request is taking longer than expected, please try again.")
